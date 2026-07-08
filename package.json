@@ -2,7 +2,7 @@
   "name": "glm-agent",
   "displayName": "GLM Agent",
   "description": "VS Code sidebar for a second, isolated Hermes agent instance pinned to the GLM (Z.AI) model via its own ~/.hermes-glm home. Runs side by side with the original Hermes/MiMo panel. Communicates over ACP.",
-  "version": "3.0.3",
+  "version": "3.0.4",
   "publisher": "joaompfp",
   "author": "joao",
   "license": "MIT",

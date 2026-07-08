@@ -25,6 +25,9 @@ interface HermesModelCache {
   openai?: {
     models?: Record<string, HermesModelRecord>;
   };
+  zai?: {
+    models?: Record<string, HermesModelRecord>;
+  };
 }
 
 const ANTHROPIC_MODEL_IDS = [
@@ -50,7 +53,30 @@ const OPENAI_CODEX_MODEL_IDS = [
   'gpt-5.3-codex-spark',
 ];
 
+// GLM fork: Z.AI GLM model set (matches the agent's curated `zai` list in
+// hermes_cli/models.py). Selecting one sends `/model zai:<id>`, which the ACP
+// adapter switches within the zai provider (verified). Active model still
+// starts from ~/.hermes-glm/config.yaml.
+const GLM_MODEL_IDS = [
+  'glm-5.2',
+  'glm-5.1',
+  'glm-5',
+  'glm-5v-turbo',
+  'glm-5-turbo',
+  'glm-4.7',
+  'glm-4.5',
+  'glm-4.5-flash',
+];
+
 const FALLBACK_LABELS: Record<string, string> = {
+  'glm-5.2': 'GLM-5.2',
+  'glm-5.1': 'GLM-5.1',
+  'glm-5': 'GLM-5',
+  'glm-5v-turbo': 'GLM-5V Turbo',
+  'glm-5-turbo': 'GLM-5 Turbo',
+  'glm-4.7': 'GLM-4.7',
+  'glm-4.5': 'GLM-4.5',
+  'glm-4.5-flash': 'GLM-4.5 Flash',
   'claude-opus-4-1-20250805': 'Claude Opus 4.1',
   'claude-opus-4-20250514': 'Claude Opus 4',
   'claude-opus-4-5-20251101': 'Claude Opus 4.5',
@@ -108,7 +134,10 @@ export function loadHermesModelGroups(): ModelMenuGroup[] {
   const anthropic = cache?.anthropic?.models;
   const openai = cache?.openai?.models;
 
+  const zai = cache?.zai?.models;
+
   return [
+    buildGroup('GLM · Z.AI', 'zai', GLM_MODEL_IDS, zai),
     buildGroup('Anthropic', 'anthropic', ANTHROPIC_MODEL_IDS, anthropic),
     buildGroup('OpenAI Codex', 'openai-codex', OPENAI_CODEX_MODEL_IDS, openai),
   ];
