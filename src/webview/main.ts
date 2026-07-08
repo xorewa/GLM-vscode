@@ -10,7 +10,7 @@ import { createInitialState } from './state';
 import {
   renderMarkdown, appendDiv, appendMessage, showWaiting,
   formatToolDisplay, renderTodoOverlay, detectTodoUpdate,
-  loadHistory, fmtTok,
+  loadHistory, fmtTok, addAgentCopyButton,
 } from './renderers';
 import {
   closeAllDropdowns, buildSessionPicker, setupSessionPickerHandlers,
@@ -394,7 +394,10 @@ window.addEventListener('message', (e: MessageEvent) => {
         break;
       }
       if (S.pendingText) flushPending();
-      if (S.currentAgentEl && S.currentAgentText) renderMarkdown(S.currentAgentEl, S.currentAgentText);
+      if (S.currentAgentEl && S.currentAgentText) {
+        renderMarkdown(S.currentAgentEl, S.currentAgentText);
+        addAgentCopyButton(S.currentAgentEl);
+      }
       S.currentAgentEl = null; S.currentAgentText = '';
       document.getElementById('waiting')?.remove();
       const isDone = msg.toolStatus === 'done' || msg.toolStatus === 'completed';
@@ -439,6 +442,7 @@ window.addEventListener('message', (e: MessageEvent) => {
           detectTodoUpdate(S.currentAgentText, todoOverlay);
         }
         renderMarkdown(S.currentAgentEl, S.currentAgentText);
+        addAgentCopyButton(S.currentAgentEl);
         autoScroll();
       }
       // YOLO state feedback — parse the adapter's /yolo response ("⚡ YOLO mode: ON — ..."

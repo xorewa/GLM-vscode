@@ -579,6 +579,18 @@ const CSS_TEMPLATE = /* css */ `
     .msg.agent pre:hover .copy-btn { opacity: 0.7; }
     .msg.agent pre .copy-btn:hover { opacity: 1; background: rgba(245,197,66,0.3); }
     .msg.agent pre .copy-btn.copied { color: #4EC9B0; }
+    /* Whole-message copy button (top-right of each completed agent/system reply) */
+    .msg.agent, .msg.system { position: relative; }
+    .msg-copy-btn {
+      position: absolute; top: 4px; right: 4px;
+      background: rgba(128,128,128,0.25); border: none; border-radius: 3px;
+      color: var(--vscode-foreground); font-family: var(--ui-font);
+      font-size: 0.7em; padding: 2px 7px; cursor: pointer;
+      opacity: 0; transition: opacity 0.15s; z-index: 2;
+    }
+    .msg.agent:hover .msg-copy-btn, .msg.system:hover .msg-copy-btn { opacity: 0.65; }
+    .msg-copy-btn:hover { opacity: 1; background: rgba(245,197,66,0.3); }
+    .msg-copy-btn.copied { color: #4EC9B0; }
     .msg.agent img {
       max-width: 100%; border-radius: 6px; margin: 0.4em 0;
       cursor: pointer; transition: opacity 0.2s;

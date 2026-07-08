@@ -9,6 +9,9 @@ import type { StoredMessage, TodoItem } from '../types';
 // ── Markdown ─────────────────────────────────────────
 
 export function renderMarkdown(el: HTMLElement, text: string): void {
+  // Preserve the raw markdown source so the message-level copy button can
+  // copy the original text, not the rendered HTML's innerText.
+  el.dataset.raw = text;
   el.innerHTML = DOMPurify.sanitize(marked.parse(text) as string, {
     ALLOWED_TAGS: ['p','br','strong','em','del','code','pre','ul','ol','li',
       'blockquote','h1','h2','h3','h4','h5','h6','a','hr','table','thead','tbody','tr','th','td',
@@ -29,6 +32,28 @@ export function renderMarkdown(el: HTMLElement, text: string): void {
     });
     pre.appendChild(btn);
   });
+}
+
+/**
+ * Add a "Copy" button to a completed agent message that copies the raw
+ * markdown source (stored on el.dataset.raw by renderMarkdown). Idempotent —
+ * safe to call once after the final render of a streamed message or on history
+ * load. Reuses the same clipboard pattern as the per-code-block copy buttons.
+ */
+export function addAgentCopyButton(el: HTMLElement): void {
+  if (el.querySelector('.msg-copy-btn')) return;
+  const btn = document.createElement('button');
+  btn.className = 'msg-copy-btn';
+  btn.textContent = 'Copy';
+  btn.title = 'Copy full message';
+  btn.addEventListener('click', () => {
+    const raw = el.dataset.raw ?? el.textContent ?? '';
+    navigator.clipboard.writeText(raw).then(() => {
+      btn.textContent = '✓ Copied'; btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1500);
+    });
+  });
+  el.appendChild(btn);
 }
 
 // ── DOM helpers ──────────────────────────────────────
@@ -126,6 +151,7 @@ export function loadHistory(
     } else if (m.role === 'agent') {
       const el = appendDiv(container, 'msg agent');
       renderMarkdown(el, m.text);
+      addAgentCopyButton(el);
       el.scrollIntoView({ block: 'end' });
     } else if (m.role === 'tool') {
       const toolEl = appendDiv(container, 'msg tool');
